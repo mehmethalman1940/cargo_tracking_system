@@ -11,8 +11,8 @@
     <groupId>com.mehmethalman</groupId>
     <artifactId>courier-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cargo-tracking-service</name>
-    <description>cargo-tracking-service</description>
+    <name>courier-service</name>
+    <description>courier-service</description>
     <url/>
     <licenses>
         <license/>
