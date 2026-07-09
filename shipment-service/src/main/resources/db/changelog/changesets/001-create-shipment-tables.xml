@@ -8,8 +8,8 @@
     <changeSet id="20260707-01" author="mehmet">
 
         <createTable tableName="shipment">
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_shipment"/>
+            <column name="id" type="varchar(50)">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="tracking_number" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>

@@ -21,8 +21,8 @@ import java.util.UUID;
 public class Shipment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // BIGINT/BIGSERIAL ile tam uyumlu
-    private Long id;
+    @Column(name = "id", nullable = false, length = 50)
+    private String id;
 
     @Column(name = "tracking_number", unique = true, nullable = false, length = 50)
     private String trackingNumber;
@@ -33,9 +33,6 @@ public class Shipment {
     @Column(name = "receiver_address", nullable = false, length = 500)
     private String receiverAddress;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "courier_status_type", nullable = false, length = 30)
-    private CourierStatusType courierStatus;
 
     @Column(name = "assigned_courier_id")
     private Long assignedCourierId;
