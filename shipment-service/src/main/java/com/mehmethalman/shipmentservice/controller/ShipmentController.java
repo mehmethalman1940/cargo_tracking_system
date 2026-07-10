@@ -2,7 +2,9 @@ package com.mehmethalman.shipmentservice.controller;
 
 import com.mehmethalman.shipmentservice.dto.ShipmentDto;
 import com.mehmethalman.shipmentservice.dto.ShipmentDtoUı;
+import com.mehmethalman.shipmentservice.dto.ShipmentStatusHistoryDto;
 import com.mehmethalman.shipmentservice.services.ShipmentService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +24,14 @@ public class ShipmentController {
     @GetMapping(path = "/get")
     public List<ShipmentDto> findAll() {
         return shipmentService.getAllShipments();
+    }
+
+    @GetMapping(path = "/trackingNumber/{trackingNumber}")
+    public ShipmentDto findAllByTrackingNumber(@PathVariable String trackingNumber) {
+        return shipmentService.getShipmentBytrackingNumber(trackingNumber);
+    }
+    @GetMapping(path = "/{trackingNumber}/history")
+    public List<ShipmentStatusHistoryDto> getShipmentHistoryByTrackingNumber(@PathVariable String trackingNumber) {
+        return shipmentService.getShipmentHistoryByTrackingNumber(trackingNumber);
     }
 }
