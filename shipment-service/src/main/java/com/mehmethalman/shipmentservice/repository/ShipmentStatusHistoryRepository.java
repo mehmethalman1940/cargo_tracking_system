@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ShipmentStatusHistoryRepository  extends JpaRepository<ShipmentStatusHistory, Long> {
-    List<ShipmentStatusHistory> findAllByShipmentTrackingNumberOrderByChangedAtDesc(String trackingNumber);}
+    List<ShipmentStatusHistory> findAllByShipmentTrackingNumberOrderByChangedAtDesc(String trackingNumber);
+}

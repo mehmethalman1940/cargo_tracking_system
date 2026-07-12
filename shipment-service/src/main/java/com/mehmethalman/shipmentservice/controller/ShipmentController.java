@@ -3,9 +3,11 @@ package com.mehmethalman.shipmentservice.controller;
 import com.mehmethalman.shipmentservice.dto.ShipmentDto;
 import com.mehmethalman.shipmentservice.dto.ShipmentDtoUı;
 import com.mehmethalman.shipmentservice.dto.ShipmentStatusHistoryDto;
+import com.mehmethalman.shipmentservice.dto.UpdateShipmentStatusDto;
 import com.mehmethalman.shipmentservice.services.ShipmentService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,5 +35,15 @@ public class ShipmentController {
     @GetMapping(path = "/{trackingNumber}/history")
     public List<ShipmentStatusHistoryDto> getShipmentHistoryByTrackingNumber(@PathVariable String trackingNumber) {
         return shipmentService.getShipmentHistoryByTrackingNumber(trackingNumber);
+    }
+
+    @PatchMapping(path = "/{trackingNumber}/status")
+    public ResponseEntity<String> updateShipmentStatus(
+            @PathVariable String trackingNumber,
+            @RequestBody UpdateShipmentStatusDto requestDto) {
+
+        shipmentService.updateShipmentStatus(trackingNumber, requestDto);
+
+        return ResponseEntity.ok("Kargo statüsü başarıyla güncellendi (Geçmişe işlendi) ve Kafka eventi tetiklendi.");
     }
 }

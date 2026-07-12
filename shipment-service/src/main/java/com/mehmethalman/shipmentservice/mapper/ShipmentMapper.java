@@ -17,4 +17,5 @@ public interface ShipmentMapper {
     Shipment toEntity(ShipmentDto shipmentDto);
     List<ShipmentDto> toDtoList(List<Shipment> shipments);
     ShipmentStatusHistoryDto toStatusHistoryDto(ShipmentStatusHistory history);
-    List<ShipmentStatusHistoryDto> toStatusHistoryDtoList(List<ShipmentStatusHistory> historyList);}
+    List<ShipmentStatusHistoryDto> toStatusHistoryDtoList(List<ShipmentStatusHistory> historyList);
+}

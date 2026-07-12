@@ -3,8 +3,10 @@ package com.mehmethalman.shipmentservice.services;
 import com.mehmethalman.shipmentservice.dto.ShipmentDto;
 import com.mehmethalman.shipmentservice.dto.ShipmentDtoUı;
 import com.mehmethalman.shipmentservice.dto.ShipmentStatusHistoryDto;
+import com.mehmethalman.shipmentservice.dto.UpdateShipmentStatusDto;
 import com.mehmethalman.shipmentservice.entities.Shipment;
 import com.mehmethalman.shipmentservice.entities.ShipmentStatusHistory;
+import com.mehmethalman.shipmentservice.enums.CourierStatusType;
 import com.mehmethalman.shipmentservice.mapper.ShipmentMapper;
 import com.mehmethalman.shipmentservice.repository.ShipmentRepository;
 import com.mehmethalman.shipmentservice.repository.ShipmentStatusHistoryRepository;
@@ -44,13 +46,30 @@ public class ShipmentService {
     }
 
     public List<ShipmentStatusHistoryDto> getShipmentHistoryByTrackingNumber(String trackingNumber) {
-        List<ShipmentStatusHistory> historyList = shipmentStatusHistoryRepository
-                .findAllByShipmentTrackingNumberOrderByChangedAtDesc(trackingNumber);
+        List<ShipmentStatusHistory> historyList = shipmentStatusHistoryRepository.findAllByShipmentTrackingNumberOrderByChangedAtDesc(trackingNumber);
 
         if (historyList.isEmpty()) {
             throw new RuntimeException("Bu Tracking number yok: " + trackingNumber);
         }
         return shipmentMapper.toStatusHistoryDtoList(historyList);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void updateShipmentStatus(String trackingNumber, UpdateShipmentStatusDto requestDto) {
+
+        Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
+        if (shipment == null) {
+            throw new RuntimeException("Statüsü güncellenmek istenen kargo bulunamadı: " + trackingNumber);
+        }
+
+        ShipmentStatusHistory history = new ShipmentStatusHistory();
+        history.setShipmentTrackingNumber(trackingNumber);
+
+        history.setStatus(CourierStatusType.valueOf(requestDto.getStatus().toUpperCase()));
+        history.setRemarks(requestDto.getRemarks());
+
+        shipmentStatusHistoryRepository.save(history);
+
     }
     }
 
