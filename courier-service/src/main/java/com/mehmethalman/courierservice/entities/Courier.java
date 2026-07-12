@@ -28,4 +28,7 @@ public class Courier {
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_type", nullable = false, length = 30)
     private VehicleEnum vehicleType;
+
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = true;
 }
