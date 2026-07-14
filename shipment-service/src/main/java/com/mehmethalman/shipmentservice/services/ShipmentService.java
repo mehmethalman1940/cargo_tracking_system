@@ -1,9 +1,7 @@
 package com.mehmethalman.shipmentservice.services;
 
-import com.mehmethalman.shipmentservice.dto.ShipmentDto;
-import com.mehmethalman.shipmentservice.dto.ShipmentDtoUı;
-import com.mehmethalman.shipmentservice.dto.ShipmentStatusHistoryDto;
-import com.mehmethalman.shipmentservice.dto.UpdateShipmentStatusDto;
+import com.mehmethalman.shipmentservice.client.CourierClient;
+import com.mehmethalman.shipmentservice.dto.*;
 import com.mehmethalman.shipmentservice.entities.Shipment;
 import com.mehmethalman.shipmentservice.entities.ShipmentStatusHistory;
 import com.mehmethalman.shipmentservice.enums.CourierStatusType;
@@ -23,6 +21,7 @@ public class ShipmentService {
     private final ShipmentRepository shipmentRepository;
     private final ShipmentMapper shipmentMapper;
     private final ShipmentStatusHistoryRepository shipmentStatusHistoryRepository;
+    private final CourierClient courierClient;
 
     public ShipmentDto createShipment(ShipmentDtoUı shipmentDtoUı) {
         Shipment shipment = shipmentMapper.toEntity(shipmentDtoUı);
@@ -70,6 +69,22 @@ public class ShipmentService {
 
         shipmentStatusHistoryRepository.save(history);
 
+    }
+
+    public void assignShipmentToCourier(Long courierId, String trackingNumber) {
+        Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
+
+        if (shipment == null) {
+            throw new RuntimeException("Kargo bulunamadı!");
+        }
+        CourierAssignRequestDto dtoListe = new CourierAssignRequestDto();
+        dtoListe.setShipmentTrackingNumber(trackingNumber);
+        String responseFromCourierService = courierClient.assignCourier(courierId, dtoListe);
+
+        shipment.setStatus("ASSIGNED");
+        shipmentRepository.save(shipment);
+
+        System.out.println("Kurye Servisinden Gelen Cevap: " + responseFromCourierService);
     }
     }
 

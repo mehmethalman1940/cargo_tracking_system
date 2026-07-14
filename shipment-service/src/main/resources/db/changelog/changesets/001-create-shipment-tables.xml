@@ -27,7 +27,7 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false" primaryKeyName="pk_shipment_history"/>
             </column>
-            <column name="shipment_id" type="BIGINT">
+            <column name="shipment_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="VARCHAR(30)"><constraints nullable="false"/></column>

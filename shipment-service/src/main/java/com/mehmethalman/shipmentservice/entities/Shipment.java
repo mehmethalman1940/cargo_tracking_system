@@ -27,11 +27,17 @@ public class Shipment {
     @Column(name = "tracking_number", unique = true, nullable = false, length = 50)
     private String trackingNumber;
 
+    @Column(name = "sender_name", nullable = false, length = 100)
+    private String senderName;
+
     @Column(name = "sender_address", nullable = false, length = 500)
     private String senderAddress;
 
     @Column(name = "receiver_address", nullable = false, length = 500)
     private String receiverAddress;
+
+    @Column(name = "receiver_name", nullable = false, length = 100)
+    private String receiverName;
 
 
     @Column(name = "assigned_courier_id")
@@ -39,6 +45,9 @@ public class Shipment {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "status")
+    private String status;
 
     @PrePersist
     protected void onCreate() {

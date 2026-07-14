@@ -46,4 +46,11 @@ public class ShipmentController {
 
         return ResponseEntity.ok("Kargo statüsü başarıyla güncellendi (Geçmişe işlendi) ve Kafka eventi tetiklendi.");
     }
+
+    @PostMapping("/{trackingNumber}/assign")
+    public ResponseEntity<String> assignCourier(@PathVariable String trackingNumber, @RequestParam Long courierId) {
+
+        shipmentService.assignShipmentToCourier(courierId, trackingNumber);
+        return ResponseEntity.ok("Kurye atama işlemi kargo servisi üzerinden başarıyla başlatıldı!");
+    }
 }

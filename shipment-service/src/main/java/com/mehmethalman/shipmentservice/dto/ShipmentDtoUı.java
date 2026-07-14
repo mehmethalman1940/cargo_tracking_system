@@ -10,6 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShipmentDtoUı {
+    private String senderName;
     private String senderAddress;
+    private String receiverName;
     private String receiverAddress;
+    private String status;
 }
