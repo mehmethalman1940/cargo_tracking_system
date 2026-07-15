@@ -21,6 +21,15 @@ services:
     ports:
       - "5436:5432"
 
+  notification-db:
+    image: postgres:15-alpine
+    container_name: notification_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notification_db
+    ports:
+      - "5437:5432"
   kafka:
     image: apache/kafka:latest
     container_name: cargo_kafka
@@ -38,7 +47,7 @@ services:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka_ui
     ports:
-      - "8083:8080"
+      - "8090:8080"
     depends_on:
       - kafka
     environment:
