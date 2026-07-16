@@ -5,6 +5,8 @@ import com.mehmethalman.shipmentservice.dto.*;
 import com.mehmethalman.shipmentservice.entities.Shipment;
 import com.mehmethalman.shipmentservice.entities.ShipmentStatusHistory;
 import com.mehmethalman.shipmentservice.enums.CourierStatusType;
+import com.mehmethalman.shipmentservice.event.ShipmentStatusChangedEvent;
+import com.mehmethalman.shipmentservice.kafka.ShipmentProducer;
 import com.mehmethalman.shipmentservice.mapper.ShipmentMapper;
 import com.mehmethalman.shipmentservice.repository.ShipmentRepository;
 import com.mehmethalman.shipmentservice.repository.ShipmentStatusHistoryRepository;
@@ -25,6 +27,7 @@ public class ShipmentService {
     private final ShipmentMapper shipmentMapper;
     private final ShipmentStatusHistoryRepository shipmentStatusHistoryRepository;
     private final CourierClient courierClient;
+    private final ShipmentProducer shipmentProducer;
 
     public ShipmentDto createShipment(ShipmentDtoUı shipmentDtoUı) {
         Shipment shipment = shipmentMapper.toEntity(shipmentDtoUı);
@@ -89,6 +92,17 @@ public class ShipmentService {
         shipmentRepository.save(shipment);
 
         System.out.println("Kurye Servisinden Gelen Cevap: " + responseFromCourierService);
+
+        ShipmentStatusChangedEvent event = new ShipmentStatusChangedEvent();
+
+
+        event.setTrackingNumber(shipment.getTrackingNumber());
+        event.setStatus("ASSIGNED");
+        event.setReceiverName(shipment.getReceiverName());
+        event.setReceiverAddress(shipment.getReceiverAddress());
+
+        shipmentProducer.publishStatusChangedEvent(event);
+        System.out.println("Kurye atama süreci ve asenkron Kafka bildirimi başarıyla tamamlandı.");
     }
 
     @Recover
