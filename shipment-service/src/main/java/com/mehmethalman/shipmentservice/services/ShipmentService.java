@@ -9,6 +9,9 @@ import com.mehmethalman.shipmentservice.mapper.ShipmentMapper;
 import com.mehmethalman.shipmentservice.repository.ShipmentRepository;
 import com.mehmethalman.shipmentservice.repository.ShipmentStatusHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,6 +74,7 @@ public class ShipmentService {
 
     }
 
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2), retryFor = {Exception.class})
     public void assignShipmentToCourier(Long courierId, String trackingNumber) {
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
 
@@ -86,6 +90,23 @@ public class ShipmentService {
 
         System.out.println("Kurye Servisinden Gelen Cevap: " + responseFromCourierService);
     }
+
+    @Recover
+    public void recover(Exception e, Long courierId, String trackingNumber) {
+        System.err.println("Kurye atama işlemi 3 deneme sonunda da başarısız oldu");
+        System.err.println("Hata Nedeni: " + e.getMessage());
+        System.err.println("Atanamayan Kargo Takip No: " + trackingNumber + " | Denenen Kurye ID: " + courierId);
+
+        Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
+        if (shipment != null) {
+            shipment.setStatus("CREATED");
+            shipment.setAssignedCourierId(null);
+            shipmentRepository.save(shipment);
+            System.out.println("Kargo durumu başarıyla sıfırlandı. Mevcut Durum: CREATED. Daha sonra tekrar denenebilir.");
+            throw new RuntimeException("Kurye servisine şu anda ulaşılamıyor. Gönderi kaydı güvenle oluşturuldu ancak kurye ataması daha sonra tekrar denenecek.");
+        }
     }
+}
+
 
 
