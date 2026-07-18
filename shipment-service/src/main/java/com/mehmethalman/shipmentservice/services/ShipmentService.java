@@ -77,7 +77,7 @@ public class ShipmentService {
 
     }
 
-    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2), retryFor = {Exception.class})
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2), retryFor = {feign.RetryableException.class, java.net.ConnectException.class})
     public void assignShipmentToCourier(Long courierId, String trackingNumber) {
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
 
@@ -106,7 +106,7 @@ public class ShipmentService {
     }
 
     @Recover
-    public void recover(Exception e, Long courierId, String trackingNumber) {
+    public void recover(feign.RetryableException e, Long courierId, String trackingNumber) {
         System.err.println("Kurye atama işlemi 3 deneme sonunda da başarısız oldu");
         System.err.println("Hata Nedeni: " + e.getMessage());
         System.err.println("Atanamayan Kargo Takip No: " + trackingNumber + " | Denenen Kurye ID: " + courierId);
