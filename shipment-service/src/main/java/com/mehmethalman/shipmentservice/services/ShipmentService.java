@@ -6,6 +6,7 @@ import com.mehmethalman.shipmentservice.entities.Shipment;
 import com.mehmethalman.shipmentservice.entities.ShipmentStatusHistory;
 import com.mehmethalman.shipmentservice.enums.CourierStatusType;
 import com.mehmethalman.shipmentservice.event.ShipmentStatusChangedEvent;
+import com.mehmethalman.shipmentservice.exception.ResourceNotFoundException;
 import com.mehmethalman.shipmentservice.kafka.ShipmentProducer;
 import com.mehmethalman.shipmentservice.mapper.ShipmentMapper;
 import com.mehmethalman.shipmentservice.repository.ShipmentRepository;
@@ -40,7 +41,7 @@ public class ShipmentService {
     public ShipmentDto getShipmentBytrackingNumber(String trackingNumber) {
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
         if (shipment == null) {
-            System.out.println("Found shipment");
+            throw new ResourceNotFoundException("bu takip numarasına ait bir gönderi yok: " + trackingNumber + " not found");
         }
         return shipmentMapper.toDto(shipment);
     }
@@ -54,7 +55,7 @@ public class ShipmentService {
         List<ShipmentStatusHistory> historyList = shipmentStatusHistoryRepository.findAllByShipmentTrackingNumberOrderByChangedAtDesc(trackingNumber);
 
         if (historyList.isEmpty()) {
-            throw new RuntimeException("Bu Tracking number yok: " + trackingNumber);
+            throw new ResourceNotFoundException("Bu takip numarasına ait geçmiş bulunamadı: " + trackingNumber);
         }
         return shipmentMapper.toStatusHistoryDtoList(historyList);
     }
@@ -64,7 +65,7 @@ public class ShipmentService {
 
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
         if (shipment == null) {
-            throw new RuntimeException("Statüsü güncellenmek istenen kargo bulunamadı: " + trackingNumber);
+            throw new ResourceNotFoundException("Statüsü güncellenmek istenen kargo bulunamadı: " + trackingNumber);
         }
 
         ShipmentStatusHistory history = new ShipmentStatusHistory();
@@ -82,7 +83,7 @@ public class ShipmentService {
         Shipment shipment = shipmentRepository.findByTrackingNumber(trackingNumber);
 
         if (shipment == null) {
-            throw new RuntimeException("Kargo bulunamadı!");
+            throw new ResourceNotFoundException("Bu takip numarasına ait kargo bulunamadı: " + trackingNumber);
         }
         CourierAssignRequestDto dtoListe = new CourierAssignRequestDto();
         dtoListe.setShipmentTrackingNumber(trackingNumber);
